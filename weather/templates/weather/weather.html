@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <form method="post" class="mb-5">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Выбрать</button>
+        </form>
+
+        <div class="card mb-5">
+            <div class="card-header">
+                <h1 class="h5">Current Weather</h1>
+            </div>
+            <div class="card-body" id="current-weather"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h5">Daily Weather</h1>
+            </div>
+            <div class="card-body" id="daily-weather"></div>
+        </div>
+    </div>
+
+    <style>
+        body {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .card-body p {
+        margin: 0.5rem 0;
+    }
+
+    .list-group-item {
+        margin-bottom: 0.5rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+    }
+
+    .list-group-item p {
+        margin: 0.2rem 0;
+    }
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const weatherData = {{ weather_data|safe }};
+
+        // Function to display current weather
+        function displayCurrentWeather(data) {
+            const currentWeatherDiv = document.getElementById('current-weather');
+            const currentWeatherHTML = `
+                <p><strong>Time:</strong> ${data.current.time}</p>
+                <p><strong>Temperature:</strong> ${data.current.temperature_2m} ${data.current_units.temperature_2m}</p>
+                <p><strong>Relative Humidity:</strong> ${data.current.relative_humidity_2m} ${data.current_units.relative_humidity_2m}</p>
+                <p><strong>Apparent Temperature:</strong> ${data.current.apparent_temperature} ${data.current_units.apparent_temperature}</p>
+                <p><strong>Wind Speed:</strong> ${data.current.wind_speed_10m} ${data.current_units.wind_speed_10m}</p>
+            `;
+            currentWeatherDiv.innerHTML = currentWeatherHTML;
+        }
+
+        // Function to display daily weather
+        function displayDailyWeather(data) {
+            const dailyWeatherDiv = document.getElementById('daily-weather');
+            let dailyWeatherHTML = '<ul class="list-group">';
+            for (let i = 0; i < data.daily.time.length; i++) {
+                dailyWeatherHTML += `
+                    <li class="list-group-item">
+                        <p><strong>Date:</strong> ${data.daily.time[i]}</p>
+                        <p><strong>Max Temperature:</strong> ${data.daily.temperature_2m_max[i]} ${data.daily_units.temperature_2m_max}</p>
+                        <p><strong>Apparent Max Temperature:</strong> ${data.daily.apparent_temperature_max[i]} ${data.daily_units.apparent_temperature_max}</p>
+                        <p><strong>Precipitation Probability:</strong> ${data.daily.precipitation_probability_max[i]} ${data.daily_units.precipitation_probability_max}</p>
+                        <p><strong>Max Wind Speed:</strong> ${data.daily.wind_speed_10m_max[i]} ${data.daily_units.wind_speed_10m_max}</p>
+                    </li>
+                `;
+            }
+            dailyWeatherHTML += '</ul>';
+            dailyWeatherDiv.innerHTML = dailyWeatherHTML;
+        }
+
+        displayCurrentWeather(weatherData);
+        displayDailyWeather(weatherData);
+    </script>
+</body>
+</html>
