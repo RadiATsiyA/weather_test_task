@@ -1,12 +1,22 @@
+import unittest
+from importlib import import_module
 from unittest.mock import patch
+from django.test import Client
 
-import requests_mock
-from django.test import TestCase
+from django.conf import settings
+from django.contrib.messages.storage import session
+from django.http import HttpResponse
+from django.test import TestCase, RequestFactory
+from django.contrib.sessions.middleware import SessionMiddleware
+from weather.views import WeatherView
+from weather.forms import CityForm
+from django.urls import reverse
 
 from requests import HTTPError
 
 from .exeptions import CityNotFoundException
-from .service import get_coordinates_by_city, get_weather_data
+from .models import SearchHistory
+from .service import get_coordinates_by_city, get_weather_data, update_search_history
 
 
 class TestGetCoordinatesByCity(TestCase):
@@ -39,44 +49,62 @@ class TestGetCoordinatesByCity(TestCase):
             get_coordinates_by_city(city)
 
 
-class GetWeatherDataTest(TestCase):
+class GetWeatherDataTest(unittest.TestCase):
 
     def test_get_weather_data(self):
-        city = "Москва"
-        mock_coordinates = [55.75, 37.625]
+        """Test case for existing city"""
+        city = 'Moscow'
+        weather_data = get_weather_data(city)
 
-        # Mocking get_coordinates_by_city
-        with patch('weather.service.get_coordinates_by_city') as mock_get_coordinates_by_city:
-            mock_get_coordinates_by_city.return_value = mock_coordinates
+        self.assertIn('current', weather_data)
+        self.assertIn('daily', weather_data)
+        self.assertIn('time', weather_data['current'])
+        self.assertIsInstance(weather_data['daily']['time'], list)
+        self.assertEqual(len(weather_data['daily']['time']), 7)  # Assuming daily forecast has 7 days
 
-            # Mocking the weather API response
-            with requests_mock.Mocker() as mock_request:
-                mock_request.get(requests_mock.ANY, json=self.mock_weather_data())
+    def test_get_weather_data_city_not_found(self):
+        """Test case for non-existent city"""
+        with self.assertRaises(CityNotFoundException):
+            get_weather_data('NonExistentCity')
 
-                # Call the function
-                weather_data = get_weather_data(city)
+    def test_get_coordinates_by_city_not_found(self):
+        """Test case for non-existent city in get_coordinates_by_city"""
+        with self.assertRaises(CityNotFoundException):
+            get_coordinates_by_city('fdsatr43')
 
-                # Assertions
-                self.assertEqual(weather_data['latitude'], 55.75)
-                self.assertEqual(weather_data['longitude'], 37.625)
-                self.assertIn('current', weather_data)
-                self.assertIn('daily', weather_data)
 
-    def mock_weather_data(self):
-        # Mock dynamic weather data here based on your API response structure
-        return {
-            'latitude': 55.75,
-            'longitude': 37.625,
-            'current': {
-                'temperature_2m': 30.9,
-                'relative_humidity_2m': 31,
-                'apparent_temperature': 31.7,
-                'wind_speed_10m': 2.2
-            },
-            'daily': {
-                'temperature_2m_max': [31.0, 28.6, 26.1, 26.3, 25.1, 25.3, 24.9],
-                'apparent_temperature_max': [32.0, 29.4, 25.9, 25.5, 24.9, 25.7, 25.0],
-                'precipitation_probability_max': [19, 71, 65, 55, 87, 55, 68],
-                'wind_speed_10m_max': [5.8, 9.1, 7.9, 8.6, 6.5, 7.2, 8.0]
-            }
-        }
+class SearchHistoryUpdateTestCase(TestCase):
+    def setUp(self):
+        self.session_key = "test_session_key"
+        self.city = "TestCity"
+
+    def test_update_search_history(self):
+        SearchHistory.objects.create(session_key=self.session_key, city=self.city, search_count=0)
+
+        update_search_history(self.session_key, self.city)
+        search_history = SearchHistory.objects.get(session_key=self.session_key, city=self.city)
+        self.assertEqual(search_history.search_count, 1)
+
+    def test_update_search_history_new_entry(self):
+
+        update_search_history(self.session_key, self.city)
+        search_history = SearchHistory.objects.get(session_key=self.session_key, city=self.city)
+
+        self.assertIsNotNone(search_history)
+        self.assertEqual(search_history.search_count, 1)
+
+
+class WeatherViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_weather_view_post_valid_form(self):
+        url = reverse('weather:weather_main')
+        response = self.client.post(url, {'city': 'New York'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<form')
+        self.assertIsInstance(response.context['form'], CityForm)
+        self.assertIsNotNone(response.context.get('weather_data'))
+
+
