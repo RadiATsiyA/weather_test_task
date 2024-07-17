@@ -1,0 +1,22 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.card-body p {
+    margin: 0.5rem 0;
+}
+
+.list-group-item {
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.list-group-item p {
+    margin: 0.2rem 0;
+}
