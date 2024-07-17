@@ -1,7 +1,7 @@
 
 from django.conf import settings
 import requests
-from .exeptions import CityNotFoundException, ErrorFetchingData
+from .exeptions import CityNotFoundException
 
 
 def get_coordinates_by_city(city: str) -> list[float, float]:
@@ -27,10 +27,8 @@ def get_weather_data(city: str):
               f"&daily=temperature_2m_max,apparent_temperature_max,precipitation_probability_max,wind_speed_10m_max" \
               f"&timezone=Europe%2FMoscow"
 
-    # api_url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}" \
-    #           f"&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
-
     response = requests.get(api_url)
     response.raise_for_status()
+    print(response.json())
     return response.json()
 
