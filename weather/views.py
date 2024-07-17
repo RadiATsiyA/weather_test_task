@@ -1,9 +1,8 @@
-import requests
 from django.shortcuts import render
 from django.views import View
 
 from .forms import CityForm
-from .service import get_weather_data
+from .service import get_weather_data, update_search_history
 
 
 class WeatherView(View):
@@ -20,5 +19,11 @@ class WeatherView(View):
         if form.is_valid():
             city = form.cleaned_data['city']
             weather_data = get_weather_data(city)
+
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+                session_key = request.session.session_key
+            update_search_history(session_key, city)
         return render(request, self.template_name, {'form': form, 'weather_data': weather_data})
 
