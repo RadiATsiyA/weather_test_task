@@ -44,8 +44,10 @@ INSTALLED_APPS = [
 
     # local
     'weather',
+    'api',
 
     # 3rd party
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +139,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # APIs
 
 GEOCODE_API = os.getenv('GEOCODE')
+
+# Session
+SESSION_COOKIE_AGE = 604800
+
+SESSION_SAVE_EVERY_REQUEST = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
