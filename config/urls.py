@@ -22,6 +22,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("weather.urls", namespace="weather")),
+    path("api/", include("api.urls", namespace="api")),
 ]
 
 if settings.DEBUG:
