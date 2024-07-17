@@ -20,6 +20,5 @@ class WeatherView(View):
         if form.is_valid():
             city = form.cleaned_data['city']
             weather_data = get_weather_data(city)
-            print(weather_data)
         return render(request, self.template_name, {'form': form, 'weather_data': weather_data})
 
