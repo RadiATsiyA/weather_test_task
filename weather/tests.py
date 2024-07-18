@@ -16,7 +16,7 @@ from requests import HTTPError
 
 from .exeptions import CityNotFoundException
 from .models import SearchHistory
-from .service import get_coordinates_by_city, get_weather_data, update_search_history
+from .service import get_coordinates_by_city, get_weather_data, update_search_history, get_session_key
 
 
 class TestGetCoordinatesByCity(TestCase):
@@ -65,7 +65,7 @@ class GetWeatherDataTest(unittest.TestCase):
     def test_get_weather_data_city_not_found(self):
         """Test case for non-existent city"""
         with self.assertRaises(CityNotFoundException):
-            get_weather_data('NonExistentCity')
+            get_weather_data('342hkhkjh__')
 
     def test_get_coordinates_by_city_not_found(self):
         """Test case for non-existent city in get_coordinates_by_city"""
