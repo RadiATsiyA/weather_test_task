@@ -6,6 +6,12 @@ from .exeptions import CityNotFoundException
 from .models import SearchHistory
 
 
+def get_session_key(request):
+    if not request.session.session_key:
+        request.session.create()
+    return request.session.session_key
+
+
 def update_search_history(session_key, city: str) -> None:
     search_history, created = SearchHistory.objects.get_or_create(session_key=session_key, city=city)
     search_history.search_count += 1
