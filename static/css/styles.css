@@ -1,22 +1,133 @@
+/* styles.css */
 body {
+    background-color: #D0D6B5;
+    color: #2c2c2c; /* Changed text color for better visibility */
     font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #F9B5AC;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 2px solid #987284;
+}
+
+.city_name {
+    color: white;
+    padding: 0;
+    margin: 0;
+}
+
+
+.sidebar {
+    margin-bottom: 20px;
+}
+
+.btn_top-queries {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #EE7674;
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn_top-queries:hover {
+    background-color: #F9B5AC;
+    color: #2c2c2c;
+}
+
+.form {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-right: 10px;
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #9DBF9E;
+    background-color: #fff;
+    color: #2c2c2c;
+}
+
+button:hover {
+    background-color: #EE7674;
+    color: #fff;
+    cursor: pointer;
+}
+
+.card {
+    background-color: #D0D6B5;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 2px solid #987284;
 }
 
 .card-header {
-    background-color: #007bff;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #9DBF9E;
+    background-color: #987284;
     color: #fff;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
-.card-body p {
-    margin: 0.5rem 0;
+.card-body {
+    padding-top: 15px;
 }
 
-.list-group-item {
-    margin-bottom: 0.5rem;
-    padding: 1rem;
-    border: 1px solid #ddd;
+.top_wrapper {
+    display: flex;
+    justify-content: space-between;
 }
 
-.list-group-item p {
-    margin: 0.2rem 0;
+.h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #F9B5AC;
+}
+
+.weather-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.weather-card {
+    background-color: #9DBF9E;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    flex: 1;
+    text-align: left;
+    border: 1px solid #987284;
+}
+
+.weather-card h5 {
+    margin: 0;
+    font-size: 1rem;
+    color: #987284;
+}
+
+.weather-card p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #987284;
 }
