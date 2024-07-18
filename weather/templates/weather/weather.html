@@ -4,39 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Data</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Weather forecast</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <div class="container mt-5">
-        <form method="post" class="mb-5">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ form.as_p }}
+    <div class="container">
+
+        <div class="top_wrapper">
+            <div class="sidebar">
+                <a href="{% url 'api:search-history' %}" class="btn_top-queries">My top queries</a>
             </div>
-            <button type="submit" class="btn btn-primary">Выбрать</button>
-        </form>
+
+            {% if city %}
+                <h1 class="city_name">{{ city }}</h1>
+            {% endif %}
+
+            <form method="POST" class="form">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.city }}
+                </div>
+                <button type="submit" class="btn_form">Search</button>
+            </form>
+        </div>
 
         <div class="card mb-5">
             <div class="card-header">
                 <h1 class="h5">Current Weather</h1>
             </div>
-            <div class="card-body" id="current-weather"></div>
+            <div class="card-body" id="current-weather">
+                <!-- Current weather data will be inserted here -->
+            </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <h1 class="h5">Daily Weather</h1>
+                <h1 class="h5">7-Day Weather Forecast</h1>
             </div>
-            <div class="card-body" id="daily-weather"></div>
+            <div class="card-body weather-details" id="daily-weather">
+                <!-- Daily weather data will be inserted here -->
+            </div>
         </div>
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'js/display_weather_data.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            const searchInput = $(".input");
+            $.get("/api/history/", function(data) {
+                const cities = data.map(entry => entry.city);
+                searchInput.autocomplete({
+                    source: cities
+                });
+            });
+        });
+    </script>
     <script>
         const weatherData = {{ weather_data|safe }};
         displayWeatherData(weatherData);
